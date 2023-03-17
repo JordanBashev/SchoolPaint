@@ -1,0 +1,2 @@
+# SchoolPaint
+Hi!
