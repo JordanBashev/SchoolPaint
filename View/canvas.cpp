@@ -93,7 +93,11 @@ void     Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent *event )
 }
 
 
-void     Canvas::paintRect( const QPointF& pos, const QColor& fillColor, const QColor& penColor , const int size )
+void     Canvas::paintRect( const QPointF& pos,
+							const QColor& fillColor,
+							const QColor& penColor,
+							const int size )
+//FIX YO CODE FAM PLZZZZZZ _O_O_O_O;
 {
     QBrush*    brush            = new QBrush( fillColor );
     QPen*      pen              = new QPen( penColor );
