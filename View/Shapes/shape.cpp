@@ -57,7 +57,7 @@ QRectF	Shape::boundingRect() const
 void	Shape::paint( QPainter* painter,
 					  const QStyleOptionGraphicsItem* option, QWidget* widget )
 {
-	QRectF	rect		= boundingRect();
+	QRectF	rect	= boundingRect();
 	QRectF	Ellipse	= QRectF( 0, 0, m_size / ONE_FIVE, m_size );
 	switch( type() )
 	{

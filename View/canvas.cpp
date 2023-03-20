@@ -8,7 +8,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Canvas::Canvas( QObject *parent )
+Canvas::Canvas( QObject* parent )
 	: QGraphicsScene( parent )
 { }
 
@@ -23,7 +23,7 @@ Canvas::~Canvas()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::mousePressEvent( QGraphicsSceneMouseEvent *event )
+void	Canvas::mousePressEvent( QGraphicsSceneMouseEvent*	event )
 {
 	if( event->button() == Qt::LeftButton && m_isDrawingRect )
 		paintRect( event->scenePos(), m_fillColor, m_penColor, m_size );
@@ -67,7 +67,7 @@ void	Canvas::mousePressEvent( QGraphicsSceneMouseEvent *event )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent *event )
+void	Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent*	event )
 {
 	if( event->button() == Qt::RightButton && m_isGroupSelected )
 	{
@@ -108,9 +108,9 @@ void	Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent *event )
 ////////////////////////////////////////////////////////////////////////////////
 
 void	Canvas::paintRect( const QPointF& pos,
-							const QColor& fillColor,
-							const QColor& penColor,
-							const int size )
+						   const QColor& fillColor,
+						   const QColor& penColor,
+						   const int size )
 //FIX YO CODE FAM PLZZZZZZ _O_O_O_O;
 {
 	QBrush*		brush	= new QBrush( fillColor );
@@ -124,10 +124,10 @@ void	Canvas::paintRect( const QPointF& pos,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::paintEllipse( const QPointF &pos,
-							   const QColor &fillColor,
-							   const QColor &penColor,
-							   const int size )
+void	Canvas::paintEllipse( const QPointF& pos,
+							  const QColor& fillColor,
+							  const QColor& penColor,
+							  const int size )
 {
 	QBrush*		brush	= new QBrush( fillColor );
 	QPen*		pen		= new QPen( penColor );
@@ -140,10 +140,10 @@ void	Canvas::paintEllipse( const QPointF &pos,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::paintCircle( const QPointF &pos,
-							  const QColor &fillColor,
-							  const QColor &penColor,
-							  const int size )
+void	Canvas::paintCircle( const QPointF& pos,
+							 const QColor& fillColor,
+							 const QColor& penColor,
+							 const int size )
 {
 	QBrush*		brush	= new QBrush( fillColor );
 	QPen*		pen		= new QPen( penColor );
@@ -156,10 +156,10 @@ void	Canvas::paintCircle( const QPointF &pos,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::paintHexagon( const QPointF &pos,
-							   const QColor &fillColor,
-							   const QColor &penColor,
-							   const int size )
+void	Canvas::paintHexagon( const QPointF& pos,
+							  const QColor& fillColor,
+							  const QColor& penColor,
+							  const int size )
 {
 	QBrush*		brush	= new QBrush( fillColor );
 	QPen*		pen		= new QPen( penColor );
@@ -172,10 +172,10 @@ void	Canvas::paintHexagon( const QPointF &pos,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::paintStar( const QPointF &pos,
-							const QColor &fillColor,
-							const QColor &penColor,
-							const int size )
+void	Canvas::paintStar( const QPointF& pos,
+						   const QColor& fillColor,
+						   const QColor& penColor,
+						   const int size )
 {
 	QBrush*		brush	= new QBrush( fillColor );
 	QPen*		pen		= new QPen( penColor );
@@ -191,7 +191,7 @@ void	Canvas::paintStar( const QPointF &pos,
 Shape*		Canvas::getItem( const QPointF& pos )
 {
 	QTransform	transform;
-	QGraphicsItem*	selectedItem	= itemAt( pos, transform );
+	QGraphicsItem*	selectedItem	=	itemAt( pos, transform );
 	return static_cast< Shape* >( selectedItem );
 }
 
@@ -199,8 +199,8 @@ Shape*		Canvas::getItem( const QPointF& pos )
 
 void	Canvas::changeFillColor( const QColor& fillColor ) // crashes when called for more then 1 item simultaniusly. think of potential fix.
 {
-	Shape*	item	= getItem( m_itemSelect );
-	QBrush	newBrush  ( fillColor );
+	Shape*	item	=	getItem( m_itemSelect );
+	QBrush	newBrush( fillColor );
 	if( item != nullptr )
 		item->changeFillColor( newBrush );
 	update();
@@ -208,10 +208,10 @@ void	Canvas::changeFillColor( const QColor& fillColor ) // crashes when called f
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::changePenColor( const QColor &penColor )
+void	Canvas::changePenColor( const QColor& penColor )
 {
-	Shape*	item	= getItem( m_itemSelect );
-	QPen	newPen  ( penColor );
+	Shape*	item	=	getItem( m_itemSelect );
+	QPen	newPen( penColor );
 	if( item != nullptr )
 		item->changePenColor( newPen );
 	update();
@@ -221,7 +221,7 @@ void	Canvas::changePenColor( const QColor &penColor )
 
 void	Canvas::changeSize( const double size )
 {
-	Shape*	item	= getItem( m_itemSelect );
+	Shape*	item	=	getItem( m_itemSelect );
 	if( item != nullptr )
 		item->changeSize( size );
 	update();
@@ -229,9 +229,18 @@ void	Canvas::changeSize( const double size )
 
 ////////////////////////////////////////////////////////////////////////////////
 
+void	Canvas::rotateObject( QWidget* parent )
+{
+	Shape*	item	=	getItem( m_itemSelect );
+	if( item != nullptr )
+		slider	=	new CustomSlider( parent, item );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 bool	Canvas::isGroupSelected()
 {
-	return m_isGroupSelected;
+	return	m_isGroupSelected;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

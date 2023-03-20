@@ -40,14 +40,14 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	MainWindow( QWidget *parent = nullptr );
+	MainWindow( QWidget*	parent	=	nullptr );
 	~MainWindow();
 
 private:
-	Ui::MainWindow*    ui;
+	Ui::MainWindow*	ui;
 
 private:
-	Canvas*	scene;
+	Canvas*	m_scene			= nullptr;
 
 private slots:
 	void	comboSelect( const int indx );

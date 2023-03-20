@@ -13,6 +13,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Shapes/includeShapes.h"
+#include "CustomDialogs/customslider.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -40,6 +41,7 @@ private:
 	QGraphicsItemGroup*		m_group				= nullptr;
 	QPainterPath*			m_selectionPath		= nullptr;
 	QGraphicsPathItem*		m_deletePath		= nullptr;
+	CustomSlider*			slider				= nullptr;
 	QPointF					m_itemSelect;
 	QPointF					m_selectionTopLeft;
 
@@ -60,11 +62,12 @@ public:
 	void	changeFillColor( const QColor& fillColor );
 	void	changePenColor( const QColor& penColor );
 	void	changeSize( const double size );
+	void	rotateObject( QWidget* parent );
 
 private:
-	virtual void	mousePressEvent( QGraphicsSceneMouseEvent *event ) override;
+	virtual void	mousePressEvent( QGraphicsSceneMouseEvent* event ) override;
 	virtual void	mouseReleaseEvent
-					( QGraphicsSceneMouseEvent *event ) override;
+					( QGraphicsSceneMouseEvent* event ) override;
 	void	paintRect( const QPointF& pos,
 							   const QColor& fillColor,
 							   const QColor& penColor,
@@ -85,7 +88,7 @@ private:
 							   const QColor& fillColor,
 							   const QColor& penColor,
 							   const int size );
-	Shape*	getItem( const QPointF &pos );
+	Shape*	getItem( const QPointF& pos );
 };
 
 ////////////////////////////////////////////////////////////////////////////////

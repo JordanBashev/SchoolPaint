@@ -32,6 +32,8 @@ set(PROJECT_SOURCES
 	View/Shapes/hexagon.cpp
 	View/Shapes/star.h
 	View/Shapes/star.cpp
+	View/CustomDialogs/customslider.h
+	View/CustomDialogs/customslider.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
