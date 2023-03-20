@@ -13,64 +13,64 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
-    View/canvas.cpp
-    View/canvas.h
-    View/Shapes/shape.h
-    View/Shapes/shape.cpp
-    View/Shapes/includeShapes.h
-    View/Shapes/rect.h
-    View/Shapes/rect.cpp
-    View/Shapes/ellipse.h
-    View/Shapes/ellipse.cpp
-    View/Shapes/circle.h
-    View/Shapes/circle.cpp
-    View/Shapes/hexagon.h
-    View/Shapes/hexagon.cpp
-    View/Shapes/star.h
-    View/Shapes/star.cpp
+	main.cpp
+	mainwindow.cpp
+	mainwindow.h
+	mainwindow.ui
+	View/canvas.cpp
+	View/canvas.h
+	View/Shapes/shape.h
+	View/Shapes/shape.cpp
+	View/Shapes/includeShapes.h
+	View/Shapes/rect.h
+	View/Shapes/rect.cpp
+	View/Shapes/ellipse.h
+	View/Shapes/ellipse.cpp
+	View/Shapes/circle.h
+	View/Shapes/circle.cpp
+	View/Shapes/hexagon.h
+	View/Shapes/hexagon.cpp
+	View/Shapes/star.h
+	View/Shapes/star.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(PaintHw
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-    )
+	qt_add_executable(PaintHw
+		MANUAL_FINALIZATION
+		${PROJECT_SOURCES}
+	)
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PaintHw APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
-    if(ANDROID)
-        add_library(PaintHw SHARED
-            ${PROJECT_SOURCES}
-        )
-    # Define properties for Android with Qt 5 after find_package() calls as:
-    #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+	if(ANDROID)
+		add_library(PaintHw SHARED
+			${PROJECT_SOURCES}
+		)
+	# Define properties for Android with Qt 5 after find_package() calls as:
+	#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
 else()
-    add_executable(PaintHw
-        ${PROJECT_SOURCES}
-    )
+	add_executable(PaintHw
+		${PROJECT_SOURCES}
+	)
 endif()
 endif()
 
 target_link_libraries(PaintHw PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 set_target_properties(PaintHw PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE TRUE
-    WIN32_EXECUTABLE TRUE
+	MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
+	MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+	MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+	MACOSX_BUNDLE TRUE
+	WIN32_EXECUTABLE TRUE
 )
 
 install(TARGETS PaintHw
-    BUNDLE DESTINATION .
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+	BUNDLE DESTINATION .
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(PaintHw)
+	qt_finalize_executable(PaintHw)
 endif()
