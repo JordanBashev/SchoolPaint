@@ -41,10 +41,14 @@ public:
 
 public:
 	Shape();
+//	Shape( const Shape& other );
 	void	changeFillColor( const QBrush&	newBrush	= BASE_BRUSH );
 	void	changePenColor( const QPen&		newPen		= BASE_PEN );
 	void	changeSize( const double		size		= BASE_SIZE );
 	QPointF	getBoundingRectCenter();
+	QBrush	getBrush();
+	QPen	getPen();
+	double	getSize();
 
 protected:
 	virtual QRectF	boundingRect() const override;

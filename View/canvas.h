@@ -8,7 +8,7 @@
 #include <QGraphicsItem>
 #include <QColorDialog>
 #include <QInputDialog>
-#include <QDialog>
+#include <QKeyEvent>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -45,6 +45,7 @@ private:
 	QPainterPath*			m_selectionPath		= nullptr;
 	QGraphicsPathItem*		m_deletePath		= nullptr;
 	QDialog*				m_slider			= nullptr;
+	Shape*					m_item				= nullptr;
 	QPointF					m_itemSelect;
 	QPointF					m_selectionTopLeft;
 
@@ -74,6 +75,7 @@ private:
 					( QGraphicsSceneMouseEvent* event ) override;
 	virtual void	mouseReleaseEvent
 					( QGraphicsSceneMouseEvent* event ) override;
+	virtual void	keyPressEvent ( QKeyEvent *event ) override;
 
 	void	paintRect(	const QPointF&	pos			= QPointF(),
 						const QColor&	fillColor	= DEFAULT_FILL_COLOR,
@@ -99,6 +101,8 @@ private:
 						const QColor&	fillColor	= DEFAULT_FILL_COLOR,
 						const QColor&	penColor	= DEFAULT_PEN_COLOR,
 						const int		size		= DEFAULT_SIZE );
+
+	void	pasteItems();
 
 	Shape*	getItem( const QPointF& pos = QPointF() );
 };
