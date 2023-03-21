@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "customslider.h"
+#include "opacityslider.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-CustomSlider::CustomSlider( QWidget* parent , Shape* item ) :
+OpacitySlider::OpacitySlider( QWidget* parent, Shape* item ) :
 	QDialog( parent ),
 	m_item( item ),
 	m_layout( new QHBoxLayout ),
@@ -12,8 +12,8 @@ CustomSlider::CustomSlider( QWidget* parent , Shape* item ) :
 	m_lable( new QLabel( this ) )
 {
 	m_slider	=	new		QSlider( Qt::Horizontal );
-	m_slider->setMaximum( 360 );
-	m_slider->setMinimum( -360 );
+	m_slider->setMaximum( 10 );
+	m_slider->setMinimum( 0 );
 	m_slider->setValue( 0 );
 
 	m_layout	=	new		QHBoxLayout( this );
@@ -21,31 +21,32 @@ CustomSlider::CustomSlider( QWidget* parent , Shape* item ) :
 	m_layout->addWidget( m_slider );
 
 	connect( m_slider ,
-			 &QSlider::sliderMoved ,
-			 this ,
-			 &CustomSlider::changeRotation );
-
-	connect( m_slider ,
 			 &QSlider::sliderReleased ,
 			 this ,
-			 &CustomSlider::getRotation );
+			 &OpacitySlider::getOpacity );
+
+	connect( m_slider ,
+			 &QSlider::sliderMoved ,
+			 this ,
+			 &OpacitySlider::changeOpacity );
 
 	exec();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-CustomSlider::CustomSlider( QWidget* parent,
-							QList< QGraphicsItem* > itemGroup ) :
+OpacitySlider::OpacitySlider( QWidget* parent,
+								QList< QGraphicsItem* > itemGroup ) :
 	QDialog( parent ),
 	m_itemGroup( itemGroup ),
 	m_layout( new QHBoxLayout ),
 	m_slider( new QSlider( Qt::Horizontal ) ),
 	m_lable( new QLabel( this ) )
 {
+
 	m_slider	=	new		QSlider( Qt::Horizontal );
-	m_slider->setMaximum( 360 );
-	m_slider->setMinimum( -360 );
+	m_slider->setMaximum( 10 );
+	m_slider->setMinimum( 0 );
 	m_slider->setValue( 0 );
 
 	m_layout	=	new		QHBoxLayout( this );
@@ -53,87 +54,65 @@ CustomSlider::CustomSlider( QWidget* parent,
 	m_layout->addWidget( m_slider );
 
 	connect( m_slider ,
-			 &QSlider::sliderMoved ,
-			 this ,
-			 &CustomSlider::changeRotation );
-
-	connect( m_slider ,
 			 &QSlider::sliderReleased ,
 			 this ,
-			 &CustomSlider::getRotation );
+			 &OpacitySlider::getOpacity );
+
+	connect( m_slider ,
+			 &QSlider::sliderMoved ,
+			 this ,
+			 &OpacitySlider::changeOpacity );
 
 	exec();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-CustomSlider::~CustomSlider()
+OpacitySlider::~OpacitySlider()
 {
 	delete	m_layout;
 	delete	m_slider;
-	delete	m_item;
 	for( auto item : m_itemGroup )
 		delete item;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-QTransform	CustomSlider::setItemTransform( Shape* item )
+void	OpacitySlider::getOpacity()
 {
-	QPointF		offset	=	item->getBoundingRectCenter();
-	QTransform	transform;
-	transform.translate( offset.x(), offset.y() );
-	transform.rotate( m_angle );
-	transform.translate( -offset.x(), -offset.y() );
-	return transform;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void	CustomSlider::getRotation()
-{
-	m_angle	=	m_slider->value();
+	m_opacity	=	m_slider->value() / 10.0;
 
 	if( !m_itemGroup.isEmpty() )
 	{
 		for( auto item : m_itemGroup )
 			if( Shape*	toShape	=	dynamic_cast< Shape* >( item ) )
-			{
-				QTransform	transform = setItemTransform( toShape );
-				toShape->setTransform( transform );
-			}
+				toShape->setOpacity( m_opacity );
 
-		m_lable->setText( QString::number( m_angle ) );
+		m_lable->setText( QString::number( m_opacity ) );
 		return;
 	}
 
-	QTransform	transform = setItemTransform( m_item );
-	m_item->setTransform( transform );
-	m_lable->setText( QString::number( m_angle ) );
+	m_item->setOpacity( m_opacity );
+	m_lable->setText( QString::number( m_opacity ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	CustomSlider::changeRotation()
+void	OpacitySlider::changeOpacity()
 {
-	m_angle	=	m_slider->value();
+	m_opacity	=	m_slider->value() / 10.0;
 
-	if(	!m_itemGroup.isEmpty()	)
+	if( !m_itemGroup.isEmpty() )
 	{
 		for( auto item : m_itemGroup )
 			if( Shape*	toShape	=	dynamic_cast< Shape* >( item ) )
-			{
-				QTransform	transform = setItemTransform( toShape );
-				toShape->setTransform( transform );
-			}
+				toShape->setOpacity( m_opacity );
 
-		m_lable->setText( QString::number( m_angle ) );
+		m_lable->setText( QString::number( m_opacity ) );
 		return;
 	}
 
-	QTransform	transform = setItemTransform( m_item );
-	m_item->setTransform( transform );
-	m_lable->setText( QString::number( m_angle ) );
+	m_item->setOpacity( m_opacity );
+	m_lable->setText( QString::number( m_opacity ) );
 }
-
 ////////////////////////////////////////////////////////////////////////////////

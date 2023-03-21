@@ -51,6 +51,7 @@ MainWindow::MainWindow( QWidget* parent )
 
 	connect( ui->dropDownMenu, &QComboBox::activated,
 			 this , &MainWindow::comboSelect );
+
 	connect( this, &MainWindow::customContextMenuRequested,
 			 this, &MainWindow::showContextMenu );
 }
@@ -69,15 +70,15 @@ void	MainWindow::comboSelect( const int indx )
 {
 	switch( indx )
 	{
-	case	int(m_selection::SELECT):
+	case	int( m_selection::SELECT ):
 		m_scene->select();
 		break;
 
-	case	int(m_selection::GROUP):
+	case	int( m_selection::GROUP ):
 		m_scene->selectGroup();
 		break;
 
-	case	int(m_selection::BRUSH):
+	case	int( m_selection::BRUSH ):
 	{
 		QColor	getFillColor
 				= QColorDialog::getColor( Qt::white, this, "fillColor_Picker" );
@@ -85,7 +86,7 @@ void	MainWindow::comboSelect( const int indx )
 		break;
 	}
 
-	case	int(m_selection::PEN):
+	case	int( m_selection::PEN ):
 	{
 		QColor	getPenColor
 				= QColorDialog::getColor( Qt::white, this, "penColor_Picker" );
@@ -93,7 +94,7 @@ void	MainWindow::comboSelect( const int indx )
 		break;
 	}
 
-	case	int(m_selection::RESIZE):
+	case	int( m_selection::RESIZE ):
 	{
 		int		getSize
 				= QInputDialog::getInt( this, "elements_Size", "Size: ");
@@ -101,23 +102,23 @@ void	MainWindow::comboSelect( const int indx )
 		break;
 	}
 
-	case	int(m_selection::SQUARE):
+	case	int( m_selection::SQUARE ):
 		m_scene->drawRectangle();
 		break;
 
-	case	int(m_selection::ELLIPSE):
+	case	int( m_selection::ELLIPSE ):
 		m_scene->drawEllipse();
 		break;
 
-	case	int(m_selection::CIRCLE):
+	case	int( m_selection::CIRCLE ):
 		m_scene->drawCircle();
 		break;
 
-	case	int(m_selection::HEXAGON):
+	case	int( m_selection::HEXAGON ):
 		m_scene->drawHexagon();
 		break;
 
-	case	int(m_selection::STAR):
+	case	int( m_selection::STAR ):
 		m_scene->drawStar();
 		break;
 
@@ -139,20 +140,33 @@ void	MainWindow::showContextMenu( const QPoint& pos )
 		QAction		action2( "Pen Color", this );
 		QAction		action3( "Size", this );
 		QAction		action4( "Rotate", this );
+		QAction		action5( "Opacity", this );
+		QAction		action6( "Delete" , this );
 
 		connect( &action1, &QAction::triggered,
 				 this, &MainWindow::changeFillColor );
+
 		connect( &action2, &QAction::triggered,
 				 this, &MainWindow::changePenColor );
+
 		connect( &action3, &QAction::triggered,
 				 this, &MainWindow::changeSize );
+
 		connect( &action4, &QAction::triggered,
 				 this, &MainWindow::changeRotation );
+
+		connect( &action5, &QAction::triggered,
+				 this, &MainWindow::changeOpacity );
+
+		connect( &action6, &QAction::triggered,
+				 this, &MainWindow::deleteItems );
 
 		contextMenu.addAction( &action1 );
 		contextMenu.addAction( &action2 );
 		contextMenu.addAction( &action3 );
 		contextMenu.addAction( &action4 );
+		contextMenu.addAction( &action5 );
+		contextMenu.addAction( &action6 );
 
 		contextMenu.exec( mapToGlobal(pos) );
 	}
@@ -181,7 +195,7 @@ void	MainWindow::changePenColor()
 void	MainWindow::changeSize()
 {
 	int		newSize
-			=	QInputDialog::getInt( this, "elements_Size", "Size: ");
+			=	QInputDialog::getInt( this, "elements_Size", "Size: " );
 	m_scene->changeSize( newSize );
 }
 
@@ -190,6 +204,20 @@ void	MainWindow::changeSize()
 void	MainWindow::changeRotation()
 {
 	m_scene->rotateObject( this );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void	MainWindow::changeOpacity()
+{
+	m_scene->changeOpacity( this );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void	MainWindow::deleteItems()
+{
+	m_scene->eraseItems();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

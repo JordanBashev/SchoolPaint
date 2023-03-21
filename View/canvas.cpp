@@ -16,9 +16,10 @@ Canvas::Canvas( QObject* parent )
 
 Canvas::~Canvas()
 {
-	delete m_group;
-	delete m_deletePath;
-	delete m_selectionPath;
+	delete	m_group;
+	delete	m_deletePath;
+	delete	m_selectionPath;
+	delete	m_slider;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -71,12 +72,12 @@ void	Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent*	event )
 {
 	if( event->button() == Qt::RightButton && m_isGroupSelected )
 	{
-		m_selectionPath->addRect   ( QRectF( m_selectionTopLeft,
-											 event->scenePos() )); // creating path with (0 ,0) in a double click will crash the app. think of potential fix
-		m_deletePath		= addPath( *m_selectionPath );
+		m_selectionPath->addRect
+				( QRectF( m_selectionTopLeft,event->scenePos() )); // creating path with (0 ,0) in a double click will crash the app. think of potential fix
+		m_deletePath	= addPath( *m_selectionPath );
 		m_deletePath->setFlag( m_deletePath->ItemIsMovable );
 		m_deletePath->setFlag( m_deletePath->ItemIsSelectable );
-		auto    allItems	= selectedItems();
+		auto	allItems	= selectedItems();
 		setSelectionArea( *m_selectionPath );
 
 		if ( selectedItems().count() > 0 )
@@ -88,7 +89,7 @@ void	Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent*	event )
 			allItems.clear();
 		}
 
-		delete m_selectionPath;
+		delete	m_selectionPath;
 		m_selectionPath		= nullptr;
 	}
 
@@ -97,7 +98,7 @@ void	Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent*	event )
 		if( !m_deletePath->isSelected() )
 		{
 			removeItem( m_deletePath );
-			delete m_deletePath;
+			delete	m_deletePath;
 			m_deletePath	= nullptr;
 		}
 	}
@@ -107,88 +108,87 @@ void	Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent*	event )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::paintRect( const QPointF& pos,
-						   const QColor& fillColor,
-						   const QColor& penColor,
-						   const int size )
-//FIX YO CODE FAM PLZZZZZZ _O_O_O_O;
+void	Canvas::paintRect(	const QPointF&	pos,
+							const QColor&	fillColor,
+							const QColor&	penColor,
+							const int		size )
 {
 	QBrush*		brush	= new QBrush( fillColor );
 	QPen*		pen		= new QPen( penColor );
 	Shape*		item	= new Rect( size, *pen, *brush, pos );
 	item->m_tag.append( "Rect" );
 	addItem( item );
-	delete brush;
-	delete pen;
+	delete	brush;
+	delete	pen;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::paintEllipse( const QPointF& pos,
-							  const QColor& fillColor,
-							  const QColor& penColor,
-							  const int size )
+void	Canvas::paintEllipse(	const QPointF&	pos,
+								const QColor&	fillColor,
+								const QColor&	penColor,
+								const int		size )
 {
 	QBrush*		brush	= new QBrush( fillColor );
 	QPen*		pen		= new QPen( penColor );
 	Shape*		item	= new Ellipse( size, *pen, *brush, pos );
 	item->m_tag.append( "Ellipse" );
 	addItem( item );
-	delete brush;
-	delete pen;
+	delete	brush;
+	delete	pen;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::paintCircle( const QPointF& pos,
-							 const QColor& fillColor,
-							 const QColor& penColor,
-							 const int size )
+void	Canvas::paintCircle(	const QPointF&	pos,
+								const QColor&	fillColor,
+								const QColor&	penColor,
+								const int		size )
 {
 	QBrush*		brush	= new QBrush( fillColor );
 	QPen*		pen		= new QPen( penColor );
 	Shape*		item	= new Circle( size, *pen, *brush, pos );
 	item->m_tag.append( "Circle" );
 	addItem( item );
-	delete brush;
-	delete pen;
+	delete	brush;
+	delete	pen;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::paintHexagon( const QPointF& pos,
-							  const QColor& fillColor,
-							  const QColor& penColor,
-							  const int size )
+void	Canvas::paintHexagon(	const QPointF&	pos,
+								const QColor&	fillColor,
+								const QColor&	penColor,
+								const int		size )
 {
 	QBrush*		brush	= new QBrush( fillColor );
 	QPen*		pen		= new QPen( penColor );
 	Shape*		item	= new Hexagon( size, *pen, *brush, pos );
 	item->m_tag.append( "Hexagon" );
 	addItem( item);
-	delete brush;
-	delete pen;
+	delete	brush;
+	delete	pen;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::paintStar( const QPointF& pos,
-						   const QColor& fillColor,
-						   const QColor& penColor,
-						   const int size )
+void	Canvas::paintStar(	const QPointF&	pos,
+							const QColor&	fillColor,
+							const QColor&	penColor,
+							const int		size )
 {
 	QBrush*		brush	= new QBrush( fillColor );
 	QPen*		pen		= new QPen( penColor );
 	Shape*		item	= new Star( size, *pen, *brush, pos );
 	item->m_tag.append( "Star" );
 	addItem( item );
-	delete brush;
-	delete pen;
+	delete	brush;
+	delete	pen;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Shape*		Canvas::getItem( const QPointF& pos )
+Shape*	Canvas::getItem( const QPointF& pos )
 {
 	QTransform	transform;
 	QGraphicsItem*	selectedItem	=	itemAt( pos, transform );
@@ -197,43 +197,114 @@ Shape*		Canvas::getItem( const QPointF& pos )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::changeFillColor( const QColor& fillColor ) // crashes when called for more then 1 item simultaniusly. think of potential fix.
+void	Canvas::changeFillColor( const QColor& fillColor )
 {
-	Shape*	item	=	getItem( m_itemSelect );
 	QBrush	newBrush( fillColor );
+
+	if( m_group != nullptr )
+	{
+		for( auto	item : selectedItems() )
+			if( Shape*	toShape = dynamic_cast< Shape* >( item ) )
+				toShape->changeFillColor( newBrush );
+
+		return;
+	}
+
+	Shape*	item	=	getItem( m_itemSelect );
 	if( item != nullptr )
 		item->changeFillColor( newBrush );
-	update();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void	Canvas::changePenColor( const QColor& penColor )
 {
-	Shape*	item	=	getItem( m_itemSelect );
 	QPen	newPen( penColor );
+
+	if( m_group != nullptr )
+	{
+		for( auto	item : selectedItems() )
+			if( Shape*	toShape = dynamic_cast< Shape* >( item ) )
+				toShape->changePenColor( newPen );
+
+		return;
+	}
+
+	Shape*	item	=	getItem( m_itemSelect );
 	if( item != nullptr )
 		item->changePenColor( newPen );
-	update();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void	Canvas::changeSize( const double size )
 {
+	if( m_group != nullptr )
+	{
+		for( auto	item : selectedItems() )
+			if( Shape*	toShape = dynamic_cast< Shape* >( item ) )
+				toShape->changeSize( size );
+
+		return;
+	}
+
 	Shape*	item	=	getItem( m_itemSelect );
 	if( item != nullptr )
 		item->changeSize( size );
-	update();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void	Canvas::changeOpacity( QWidget* parent )
+{
+	if( m_group != nullptr )
+	{
+		m_slider	=	new OpacitySlider( parent, selectedItems() );
+		return;
+	}
+
+	Shape*	item	=	getItem( m_itemSelect );
+	if( item != nullptr )
+		m_slider	=	new OpacitySlider( parent, item );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void	Canvas::rotateObject( QWidget* parent )
 {
+	if( m_group != nullptr )
+	{
+		m_slider	=	new CustomSlider( parent, selectedItems() );
+		return;
+	}
+
 	Shape*	item	=	getItem( m_itemSelect );
 	if( item != nullptr )
-		slider	=	new CustomSlider( parent, item );
+		m_slider	=	new CustomSlider( parent, item );
+}
+
+void Canvas::eraseItems()
+{
+	if( m_group != nullptr )
+	{
+		for( auto	item : selectedItems() )
+		{
+			if( Shape*	toShape = dynamic_cast< Shape* >( item ) )
+			{
+				removeItem( toShape );
+				delete toShape;
+			}
+		}
+
+		return;
+	}
+
+	Shape*	item	=	getItem( m_itemSelect );
+	if( item != nullptr )
+	{
+		removeItem( item );
+		delete item;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -336,7 +407,7 @@ void	Canvas::setFillColor( const QColor& fillColor )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::setPenColor ( const QColor& penColor  )
+void	Canvas::setPenColor ( const QColor& penColor )
 {
 	m_penColor		= penColor;
 }
