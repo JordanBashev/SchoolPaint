@@ -41,15 +41,16 @@ public:
 
 public:
 	Shape();
-	void	changeFillColor( const QBrush& newBrush );
-	void	changePenColor( const QPen& newPen );
-	void	changeSize( const double size );
+	void	changeFillColor( const QBrush&	newBrush	= BASE_BRUSH );
+	void	changePenColor( const QPen&		newPen		= BASE_PEN );
+	void	changeSize( const double		size		= BASE_SIZE );
+	QPointF	getBoundingRectCenter();
 
 protected:
 	virtual QRectF	boundingRect() const override;
-	virtual void	paint( QPainter* painter,
-						   const QStyleOptionGraphicsItem* option,
-						   QWidget* widget ) override;
+	virtual void	paint(	QPainter* painter,
+							const QStyleOptionGraphicsItem* option,
+							QWidget* widget ) override;
 
 private:
 	QList<	QPoint	>	createHexagon();

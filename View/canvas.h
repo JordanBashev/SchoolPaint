@@ -14,6 +14,7 @@
 
 #include "Shapes/includeShapes.h"
 #include "CustomDialogs/customslider.h"
+#include "CustomDialogs/opacityslider.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -34,6 +35,8 @@ private:
 	bool					m_isDrawingStar		= false;
 	bool					m_isDrawingHexagon	= false;
 	bool					m_isGroupSelected	= false;
+	bool					m_isRotating		= false;
+	bool					m_isChangingOpacity	= false;
 	QColor					m_fillColor			= Qt::white;
 	QColor					m_penColor			= Qt::black;
 	double					m_size				= 60.0;
@@ -41,7 +44,7 @@ private:
 	QGraphicsItemGroup*		m_group				= nullptr;
 	QPainterPath*			m_selectionPath		= nullptr;
 	QGraphicsPathItem*		m_deletePath		= nullptr;
-	CustomSlider*			slider				= nullptr;
+	QDialog*				m_slider			= nullptr;
 	QPointF					m_itemSelect;
 	QPointF					m_selectionTopLeft;
 
@@ -59,36 +62,45 @@ public:
 	void	setFillColor( const QColor& fillColor = DEFAULT_FILL_COLOR );
 	void	setPenColor( const QColor& penColor = DEFAULT_PEN_COLOR);
 	void	setSize( const double size = DEFAULT_SIZE );
-	void	changeFillColor( const QColor& fillColor );
-	void	changePenColor( const QColor& penColor );
-	void	changeSize( const double size );
-	void	rotateObject( QWidget* parent );
+	void	changeFillColor( const QColor& fillColor = Qt::white );
+	void	changePenColor( const QColor& penColor = Qt::black );
+	void	changeSize( const double size = DEFAULT_SIZE );
+	void	changeOpacity ( QWidget* parent = nullptr );
+	void	rotateObject( QWidget* parent = nullptr );
+	void	eraseItems();
 
 private:
-	virtual void	mousePressEvent( QGraphicsSceneMouseEvent* event ) override;
+	virtual void	mousePressEvent
+					( QGraphicsSceneMouseEvent* event ) override;
 	virtual void	mouseReleaseEvent
 					( QGraphicsSceneMouseEvent* event ) override;
-	void	paintRect( const QPointF& pos,
-							   const QColor& fillColor,
-							   const QColor& penColor,
-							   const int size );
-	void	paintEllipse( const QPointF& pos,
-								  const QColor& fillColor,
-								  const QColor& penColor,
-								  const int size );
-	void	paintCircle( const QPointF& pos,
-								 const QColor& fillColor,
-								 const QColor& penColor,
-								 const int size );
-	void	paintHexagon( const QPointF& pos,
-								  const QColor& fillColor,
-								  const QColor& penColor,
-								  const int size );
-	void	paintStar( const QPointF& pos,
-							   const QColor& fillColor,
-							   const QColor& penColor,
-							   const int size );
-	Shape*	getItem( const QPointF& pos );
+
+	void	paintRect(	const QPointF&	pos			= QPointF(),
+						const QColor&	fillColor	= DEFAULT_FILL_COLOR,
+						const QColor&	penColor	= DEFAULT_PEN_COLOR,
+						const int		size		= DEFAULT_SIZE );
+
+	void	paintEllipse(	const QPointF&	pos			= QPointF(),
+							const QColor&	fillColor	= DEFAULT_FILL_COLOR,
+							const QColor&	penColor	= DEFAULT_PEN_COLOR,
+							const int		size		= DEFAULT_SIZE );
+
+	void	paintCircle(	const QPointF&	pos			= QPointF(),
+							const QColor&	fillColor	= DEFAULT_FILL_COLOR,
+							const QColor&	penColor	= DEFAULT_PEN_COLOR,
+							const int		size		= DEFAULT_SIZE );
+
+	void	paintHexagon(	const QPointF&	pos			= QPointF(),
+							const QColor&	fillColor	= DEFAULT_FILL_COLOR,
+							const QColor&	penColor	= DEFAULT_PEN_COLOR,
+							const int		size		= DEFAULT_SIZE );
+
+	void	paintStar(	const QPointF&	pos			= QPointF(),
+						const QColor&	fillColor	= DEFAULT_FILL_COLOR,
+						const QColor&	penColor	= DEFAULT_PEN_COLOR,
+						const int		size		= DEFAULT_SIZE );
+
+	Shape*	getItem( const QPointF& pos = QPointF() );
 };
 
 ////////////////////////////////////////////////////////////////////////////////

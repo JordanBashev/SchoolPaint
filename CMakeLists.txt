@@ -34,6 +34,8 @@ set(PROJECT_SOURCES
 	View/Shapes/star.cpp
 	View/CustomDialogs/customslider.h
 	View/CustomDialogs/customslider.cpp
+	View/CustomDialogs/opacityslider.h
+	View/CustomDialogs/opacityslider.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

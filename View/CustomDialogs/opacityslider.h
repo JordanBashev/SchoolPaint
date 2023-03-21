@@ -1,5 +1,5 @@
-#ifndef CUSTOMSLIDER_H
-#define CUSTOMSLIDER_H
+#ifndef OPACITYSLIDER_H
+#define OPACITYSLIDER_H
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -16,33 +16,30 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class CustomSlider : public QDialog
+class OpacitySlider : public QDialog
 {
 	Q_OBJECT
 
 private:
-	Shape*					m_item				= nullptr;
+	Shape*					m_item;
 	QList< QGraphicsItem* >	m_itemGroup;
 	QHBoxLayout*			m_layout;
 	QSlider*				m_slider;
 	QLabel*					m_lable;
-	int						m_angle;
 	double					m_opacity;
 
 public:
-	CustomSlider( QWidget*	parent	=	nullptr , Shape*	item	= nullptr );
-	CustomSlider(QWidget*	parent	=	nullptr ,
-				QList< QGraphicsItem* >	itemGroup = QList< QGraphicsItem* >() );
-	~CustomSlider();
+	OpacitySlider( QWidget* parent = nullptr, Shape* item = nullptr );
+	OpacitySlider( QWidget* parent = nullptr ,
+				QList< QGraphicsItem* > itemGroup = QList< QGraphicsItem* >() );
+	~OpacitySlider();
 
-private:
-	QTransform	setItemTransform( Shape* item );
+private slots:
+	void	getOpacity();
+	void	changeOpacity();
 
-public slots:
-	void	changeRotation();
-	void	getRotation();
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif // CUSTOMSLIDER_H
+#endif // OPACITYSLIDER_H

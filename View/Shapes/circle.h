@@ -11,9 +11,11 @@ class Circle : public Shape
 {
 
 public:
-	Circle( const int size, const QPen &pen,
-			const QBrush &brush , const QPointF& pos );
-	virtual int    type() const override;
+	Circle(		const	int			size	= BASE_SIZE,
+				const	QPen		&pen	= BASE_PEN,
+				const	QBrush		&brush	= BASE_BRUSH,
+				const	QPointF&	pos		= QPointF() );
+	virtual int		type() const override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
