@@ -82,6 +82,9 @@ void	OpacitySlider::getOpacity()
 {
 	m_opacity	=	m_slider->value() / 10.0;
 
+	if( m_slider->value() == 0 )
+		m_opacity = 0;
+
 	if( !m_itemGroup.isEmpty() )
 	{
 		for( auto item : m_itemGroup )
@@ -101,6 +104,9 @@ void	OpacitySlider::getOpacity()
 void	OpacitySlider::changeOpacity()
 {
 	m_opacity	=	m_slider->value() / 10.0;
+
+	if( m_slider->value() == 0 )
+		m_opacity = 0;
 
 	if( !m_itemGroup.isEmpty() )
 	{

@@ -20,12 +20,14 @@ Canvas::~Canvas()
 	delete	m_deletePath;
 	delete	m_selectionPath;
 	delete	m_slider;
+	delete	m_item;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void	Canvas::mousePressEvent( QGraphicsSceneMouseEvent*	event )
 {
+
 	if( event->button() == Qt::LeftButton && m_isDrawingRect )
 		paintRect( event->scenePos(), m_fillColor, m_penColor, m_size );
 
@@ -60,8 +62,7 @@ void	Canvas::mousePressEvent( QGraphicsSceneMouseEvent*	event )
 		m_selectionTopLeft	= event->scenePos();
 	}
 
-	if( event->button() == Qt::RightButton )
-		m_itemSelect		= event->scenePos();
+	m_itemSelect		= event->scenePos();
 
 	QGraphicsScene::mousePressEvent( event );
 }
@@ -70,20 +71,22 @@ void	Canvas::mousePressEvent( QGraphicsSceneMouseEvent*	event )
 
 void	Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent*	event )
 {
+	auto	allItems	= selectedItems();
+
 	if( event->button() == Qt::RightButton && m_isGroupSelected )
 	{
 		m_selectionPath->addRect
-				( QRectF( m_selectionTopLeft,event->scenePos() )); // creating path with (0 ,0) in a double click will crash the app. think of potential fix
+				( QRectF( m_selectionTopLeft,event->scenePos() ));
+		// creating path with (0 ,0) in a double click will crash the app. think of potential fix
 		m_deletePath	= addPath( *m_selectionPath );
 		m_deletePath->setFlag( m_deletePath->ItemIsMovable );
 		m_deletePath->setFlag( m_deletePath->ItemIsSelectable );
-		auto	allItems	= selectedItems();
 		setSelectionArea( *m_selectionPath );
 
 		if ( selectedItems().count() > 0 )
 		{
 			m_group		= createItemGroup( allItems );
-			m_group->setFlag( m_group->ItemIsMovable );
+			m_group->setFlag( m_group->ItemIsMovable ); // look at selectable may reduce code alot
 
 			m_selectionTopLeft	= QPointF( 0, 0 );
 			allItems.clear();
@@ -101,9 +104,33 @@ void	Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent*	event )
 			delete	m_deletePath;
 			m_deletePath	= nullptr;
 		}
+
+		allItems.clear();
 	}
 
 	QGraphicsScene::mouseReleaseEvent( event );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+//TO DO ADD GROUP COPY PASTE;
+
+void Canvas::keyPressEvent( QKeyEvent* event )
+{
+	if( event->key() == Qt::Key_C && event->modifiers() == Qt::MetaModifier )
+	{
+		m_item		= getItem( m_itemSelect );
+	}
+
+	if( event->key() == Qt::Key_V && event->modifiers() == Qt::MetaModifier )
+	{
+		if( m_item != nullptr )
+		{
+			pasteItems();
+		}
+	}
+
+	QGraphicsScene::keyPressEvent( event );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -188,6 +215,43 @@ void	Canvas::paintStar(	const QPointF&	pos,
 
 ////////////////////////////////////////////////////////////////////////////////
 
+void Canvas::pasteItems()
+{
+	switch( m_item->type() )
+	{
+	case int( Shapetype::RECTANGLE ):
+		paintRect(	m_item->scenePos(), m_item->getBrush().color(),
+					m_item->getPen().color(),
+					m_item->getSize() );
+		break;
+	case int( Shapetype::ELLIPSE ):
+		paintEllipse(	m_item->scenePos(), m_item->getBrush().color(),
+						m_item->getPen().color(),
+						m_item->getSize() );
+		break;
+	case int( Shapetype::CIRCLE ):
+		paintCircle(	m_item->scenePos(), m_item->getBrush().color(),
+						m_item->getPen().color(),
+						m_item->getSize() );
+		break;
+	case int( Shapetype::HEXAGON ):
+		paintHexagon(	m_item->scenePos(), m_item->getBrush().color(),
+						m_item->getPen().color(),
+						m_item->getSize() );
+		break;
+	case int( Shapetype::STAR ):
+		paintStar(	m_item->scenePos(), m_item->getBrush().color(),
+					m_item->getPen().color(),
+					m_item->getSize() );
+		break;
+	default:
+		qDebug() << "Nothing Selected";
+		break;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 Shape*	Canvas::getItem( const QPointF& pos )
 {
 	QTransform	transform;
@@ -226,13 +290,13 @@ void	Canvas::changePenColor( const QColor& penColor )
 		for( auto	item : selectedItems() )
 			if( Shape*	toShape = dynamic_cast< Shape* >( item ) )
 				toShape->changePenColor( newPen );
-
 		return;
 	}
 
 	Shape*	item	=	getItem( m_itemSelect );
 	if( item != nullptr )
 		item->changePenColor( newPen );
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -283,7 +347,9 @@ void	Canvas::rotateObject( QWidget* parent )
 		m_slider	=	new CustomSlider( parent, item );
 }
 
-void Canvas::eraseItems()
+////////////////////////////////////////////////////////////////////////////////
+
+void	 Canvas::eraseItems()
 {
 	if( m_group != nullptr )
 	{
