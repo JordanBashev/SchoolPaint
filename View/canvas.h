@@ -8,6 +8,7 @@
 #include <QGraphicsItem>
 #include <QColorDialog>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <QKeyEvent>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,6 +61,10 @@ public:
 	void	select();
 	void	selectGroup();
 	bool	isGroupSelected();
+	void	eraseItems();
+	void	displayName();
+	void	itemName( const QString& name = NULL );
+	void	searchItems( const QString& text = NULL );
 	void	setFillColor( const QColor& fillColor = DEFAULT_FILL_COLOR );
 	void	setPenColor( const QColor& penColor = DEFAULT_PEN_COLOR);
 	void	setSize( const double size = DEFAULT_SIZE );
@@ -68,7 +73,6 @@ public:
 	void	changeSize( const double size = DEFAULT_SIZE );
 	void	changeOpacity ( QWidget* parent = nullptr );
 	void	rotateObject( QWidget* parent = nullptr );
-	void	eraseItems();
 
 private:
 	virtual void	mousePressEvent
@@ -102,7 +106,7 @@ private:
 						const QColor&	penColor	= DEFAULT_PEN_COLOR,
 						const int		size		= DEFAULT_SIZE );
 
-	void	pasteItems();
+	void	pasteItems( Shape* item = nullptr );
 
 	Shape*	getItem( const QPointF& pos = QPointF() );
 };

@@ -25,6 +25,9 @@ MainWindow::MainWindow( QWidget* parent )
 				QIcon( "/Users/monterey/Documents/Icons/groupSelect.png" ),
 				tr("group") );
 	ui->dropDownMenu->addItem(
+				QIcon( "/Users/monterey/Documents/Icons/Search.png" ),
+				tr("search") );
+	ui->dropDownMenu->addItem(
 				QIcon( "/Users/monterey/Documents/Icons/Brush.png" ),
 				tr("brush") );
 	ui->dropDownMenu->addItem(
@@ -78,6 +81,14 @@ void	MainWindow::comboSelect( const int indx )
 		m_scene->selectGroup();
 		break;
 
+	case	int( m_selection::SEARCH ):
+	{
+		m_scene->select();
+		QString	getText
+				= QInputDialog::getText( this, "Text", "Name/Tag: " );
+		m_scene->searchItems( getText );
+		break;
+	}
 	case	int( m_selection::BRUSH ):
 	{
 		QColor	getFillColor
@@ -141,7 +152,9 @@ void	MainWindow::showContextMenu( const QPoint& pos )
 		QAction		action3( "Size", this );
 		QAction		action4( "Rotate", this );
 		QAction		action5( "Opacity", this );
-		QAction		action6( "Delete" , this );
+		QAction		action6( "Change Name" , this );
+		QAction		action7( "Display Name" , this );
+		QAction		action8( "Delete" , this );
 
 		connect( &action1, &QAction::triggered,
 				 this, &MainWindow::changeFillColor );
@@ -159,6 +172,12 @@ void	MainWindow::showContextMenu( const QPoint& pos )
 				 this, &MainWindow::changeOpacity );
 
 		connect( &action6, &QAction::triggered,
+				 this, &MainWindow::changeItemName );
+
+		connect( &action7, &QAction::triggered,
+				 this, &MainWindow::displayItemName );
+
+		connect( &action8, &QAction::triggered,
 				 this, &MainWindow::deleteItems );
 
 		contextMenu.addAction( &action1 );
@@ -167,6 +186,8 @@ void	MainWindow::showContextMenu( const QPoint& pos )
 		contextMenu.addAction( &action4 );
 		contextMenu.addAction( &action5 );
 		contextMenu.addAction( &action6 );
+		contextMenu.addAction( &action7 );
+		contextMenu.addAction( &action8 );
 
 		contextMenu.exec( mapToGlobal(pos) );
 	}
@@ -211,6 +232,23 @@ void	MainWindow::changeRotation()
 void	MainWindow::changeOpacity()
 {
 	m_scene->changeOpacity( this );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void	MainWindow::changeItemName()
+{
+	QString	getText
+			= QInputDialog::getText( this, "Name", "Name: " );
+
+	m_scene->itemName( getText );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void	MainWindow::displayItemName()
+{
+	m_scene->displayName();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

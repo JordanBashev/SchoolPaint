@@ -43,6 +43,9 @@ void	Canvas::mousePressEvent( QGraphicsSceneMouseEvent*	event )
 	if( event->button() == Qt::LeftButton && m_isDrawingStar )
 		paintStar( event->scenePos(), m_fillColor, m_penColor, m_size );
 
+	if( event->button() == Qt::LeftButton )
+		m_itemSelect		= event->scenePos();
+
 	if( event->button() == Qt::RightButton && m_isGroupSelected )
 	{
 		if( m_deletePath != nullptr )
@@ -61,8 +64,6 @@ void	Canvas::mousePressEvent( QGraphicsSceneMouseEvent*	event )
 		m_selectionPath		= new QPainterPath();
 		m_selectionTopLeft	= event->scenePos();
 	}
-
-	m_itemSelect		= event->scenePos();
 
 	QGraphicsScene::mousePressEvent( event );
 }
@@ -86,7 +87,7 @@ void	Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent*	event )
 		if ( selectedItems().count() > 0 )
 		{
 			m_group		= createItemGroup( allItems );
-			m_group->setFlag( m_group->ItemIsMovable ); // look at selectable may reduce code alot
+			m_group->setFlag( m_group->ItemIsMovable );// look at selectable may reduce code alot
 
 			m_selectionTopLeft	= QPointF( 0, 0 );
 			allItems.clear();
@@ -113,9 +114,7 @@ void	Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent*	event )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-//TO DO ADD GROUP COPY PASTE;
-
-void Canvas::keyPressEvent( QKeyEvent* event )
+void	Canvas::keyPressEvent( QKeyEvent* event )
 {
 	if( event->key() == Qt::Key_C && event->modifiers() == Qt::MetaModifier )
 	{
@@ -124,10 +123,17 @@ void Canvas::keyPressEvent( QKeyEvent* event )
 
 	if( event->key() == Qt::Key_V && event->modifiers() == Qt::MetaModifier )
 	{
-		if( m_item != nullptr )
+		if( m_group != nullptr )
 		{
-			pasteItems();
+			for( auto item : selectedItems() )
+				if( Shape*	toShape = dynamic_cast< Shape* >( item ) )
+					pasteItems( toShape );
+
+			return;
 		}
+
+		if( m_item != nullptr )
+			pasteItems( m_item );
 	}
 
 	QGraphicsScene::keyPressEvent( event );
@@ -215,34 +221,34 @@ void	Canvas::paintStar(	const QPointF&	pos,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void Canvas::pasteItems()
+void	Canvas::pasteItems( Shape* item )
 {
-	switch( m_item->type() )
+	switch( item->type() )
 	{
 	case int( Shapetype::RECTANGLE ):
-		paintRect(	m_item->scenePos(), m_item->getBrush().color(),
-					m_item->getPen().color(),
-					m_item->getSize() );
+		paintRect(	item->scenePos(), item->getBrush().color(),
+					item->getPen().color(),
+					item->getSize() );
 		break;
 	case int( Shapetype::ELLIPSE ):
-		paintEllipse(	m_item->scenePos(), m_item->getBrush().color(),
-						m_item->getPen().color(),
-						m_item->getSize() );
+		paintEllipse(	item->scenePos(), item->getBrush().color(),
+						item->getPen().color(),
+						item->getSize() );
 		break;
 	case int( Shapetype::CIRCLE ):
-		paintCircle(	m_item->scenePos(), m_item->getBrush().color(),
-						m_item->getPen().color(),
-						m_item->getSize() );
+		paintCircle(	item->scenePos(), item->getBrush().color(),
+						item->getPen().color(),
+						item->getSize() );
 		break;
 	case int( Shapetype::HEXAGON ):
-		paintHexagon(	m_item->scenePos(), m_item->getBrush().color(),
-						m_item->getPen().color(),
-						m_item->getSize() );
+		paintHexagon(	item->scenePos(), item->getBrush().color(),
+						item->getPen().color(),
+						item->getSize() );
 		break;
 	case int( Shapetype::STAR ):
-		paintStar(	m_item->scenePos(), m_item->getBrush().color(),
-					m_item->getPen().color(),
-					m_item->getSize() );
+		paintStar(	item->scenePos(), item->getBrush().color(),
+					item->getPen().color(),
+					item->getSize() );
 		break;
 	default:
 		qDebug() << "Nothing Selected";
@@ -265,7 +271,7 @@ void	Canvas::changeFillColor( const QColor& fillColor )
 {
 	QBrush	newBrush( fillColor );
 
-	if( m_group != nullptr )
+	if( !selectedItems().isEmpty() )
 	{
 		for( auto	item : selectedItems() )
 			if( Shape*	toShape = dynamic_cast< Shape* >( item ) )
@@ -285,7 +291,7 @@ void	Canvas::changePenColor( const QColor& penColor )
 {
 	QPen	newPen( penColor );
 
-	if( m_group != nullptr )
+	if( !selectedItems().isEmpty() )
 	{
 		for( auto	item : selectedItems() )
 			if( Shape*	toShape = dynamic_cast< Shape* >( item ) )
@@ -303,7 +309,7 @@ void	Canvas::changePenColor( const QColor& penColor )
 
 void	Canvas::changeSize( const double size )
 {
-	if( m_group != nullptr )
+	if( !selectedItems().isEmpty() )
 	{
 		for( auto	item : selectedItems() )
 			if( Shape*	toShape = dynamic_cast< Shape* >( item ) )
@@ -321,7 +327,7 @@ void	Canvas::changeSize( const double size )
 
 void	Canvas::changeOpacity( QWidget* parent )
 {
-	if( m_group != nullptr )
+	if( !selectedItems().isEmpty() )
 	{
 		m_slider	=	new OpacitySlider( parent, selectedItems() );
 		return;
@@ -336,7 +342,7 @@ void	Canvas::changeOpacity( QWidget* parent )
 
 void	Canvas::rotateObject( QWidget* parent )
 {
-	if( m_group != nullptr )
+	if( !selectedItems().isEmpty() )
 	{
 		m_slider	=	new CustomSlider( parent, selectedItems() );
 		return;
@@ -351,7 +357,7 @@ void	Canvas::rotateObject( QWidget* parent )
 
 void	 Canvas::eraseItems()
 {
-	if( m_group != nullptr )
+	if( !selectedItems().isEmpty() )
 	{
 		for( auto	item : selectedItems() )
 		{
@@ -375,9 +381,33 @@ void	 Canvas::eraseItems()
 
 ////////////////////////////////////////////////////////////////////////////////
 
+void	 Canvas::displayName()
+{
+	Shape*	item	=	getItem( m_itemSelect );
+	if( item != nullptr )
+	{
+		QMessageBox msgBox;
+		msgBox.setText( item->m_name );
+		msgBox.exec();
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 bool	Canvas::isGroupSelected()
 {
 	return	m_isGroupSelected;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void	Canvas::itemName( const QString& name )
+{
+	Shape*	item = getItem( m_itemSelect );
+	if( item != nullptr )
+	{
+		item->m_name = name;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -462,6 +492,16 @@ void	Canvas::selectGroup()
 	m_isDrawingHexagon	= false;
 	m_isDrawingStar		= false;
 	m_isGroupSelected	= true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void	Canvas::searchItems( const QString& text )
+{
+	for( auto	item : items() )
+		if( Shape*	toShape = dynamic_cast< Shape* >( item ) )
+			toShape->setSelected(	toShape->m_tag == text ||
+									toShape->m_name == text );
 }
 
 ////////////////////////////////////////////////////////////////////////////////

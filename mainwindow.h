@@ -17,6 +17,7 @@
 enum class	m_selection : quint8 {
 	SELECT = 0,
 	GROUP,
+	SEARCH,
 	BRUSH,
 	PEN,
 	RESIZE,
@@ -57,6 +58,8 @@ private slots:
 	void	changeSize();
 	void	changeRotation();
 	void	changeOpacity();
+	void	changeItemName();
+	void	displayItemName();
 	void	deleteItems();
 };
 
