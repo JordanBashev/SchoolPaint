@@ -5,8 +5,10 @@
 
 #include <QGraphicsView>
 #include <QMainWindow>
+#include <QFileDialog>
 #include <QtCore>
 #include <QtGui>
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -53,6 +55,8 @@ private:
 private slots:
 	void	comboSelect( const int indx = 0 );
 	void	showContextMenu( const QPoint& pos = QPoint() );
+	void	saveFile();
+	void	openFile();
 	void	changeFillColor();
 	void	changePenColor();
 	void	changeSize();

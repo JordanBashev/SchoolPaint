@@ -9,6 +9,7 @@
 #include <QColorDialog>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QKeyEvent>
 
 ////////////////////////////////////////////////////////////////////////////////

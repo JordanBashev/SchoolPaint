@@ -52,6 +52,9 @@ MainWindow::MainWindow( QWidget* parent )
 				QIcon( "/Users/monterey/Documents/Icons/Star.png" ),
 				tr("star") );
 
+	connect( ui->save, &QPushButton::clicked, this, &MainWindow::saveFile );
+	connect( ui->open, &QPushButton::clicked, this, &MainWindow::openFile );
+
 	connect( ui->dropDownMenu, &QComboBox::activated,
 			 this , &MainWindow::comboSelect );
 
@@ -191,6 +194,43 @@ void	MainWindow::showContextMenu( const QPoint& pos )
 
 		contextMenu.exec( mapToGlobal(pos) );
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+//DONE WRONG REDO
+
+void	MainWindow::saveFile()
+{
+	QString		fileName = QFileDialog::getSaveFileName(
+			this, "Save image",
+			QCoreApplication::applicationDirPath(),
+			"BMP Files (*.bmp);;JPEG (*.JPEG);;PNG (*.png)" );
+		if ( !fileName.isNull() )
+		{
+			QPixmap		pixMap = ui->View->grab( ui->View->scene()->itemsBoundingRect().toRect() );
+			pixMap.save( fileName );
+		}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+//almost done
+
+void	MainWindow::openFile()
+{
+	QString		fileName = QFileDialog::getOpenFileName(
+				this, tr("Open File"),
+				QCoreApplication::applicationDirPath(),
+				tr("BMP Files (*.bmp);;JPEG (*.JPEG);;PNG (*.png)") );
+
+	if ( !fileName.isNull() )
+	{
+		QPixmap		pixMap;
+		pixMap.load( fileName );
+		ui->View->scene()->addPixmap( pixMap );
+	}
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
