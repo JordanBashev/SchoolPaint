@@ -202,15 +202,33 @@ void	MainWindow::showContextMenu( const QPoint& pos )
 
 void	MainWindow::saveFile()
 {
+	QList< QGraphicsItem* > allItems = m_scene->items();
+
 	QString		fileName = QFileDialog::getSaveFileName(
-			this, "Save image",
-			QCoreApplication::applicationDirPath(),
-			"BMP Files (*.bmp);;JPEG (*.JPEG);;PNG (*.png)" );
-		if ( !fileName.isNull() )
+				this, "Save image",
+				QCoreApplication::applicationDirPath(),
+				"Text Files (*.txt)" );
+	if ( !fileName.isNull() )
+	{
+		QFile file(QFileInfo(fileName).absoluteFilePath());
+		if (file.open(QIODevice::WriteOnly))
 		{
-			QPixmap		pixMap = ui->View->grab( ui->View->scene()->itemsBoundingRect().toRect() );
-			pixMap.save( fileName );
+			QDataStream out(&file);
+			for( auto item : allItems )
+			{
+				if( Shape* toShape = dynamic_cast< Shape* >( item ) )
+				{
+					out << toShape->getBrush();
+					//out << toShape->getPen();
+					out << toShape->getSize();
+				}
+			}
+			file.close();
 		}
+
+		//			QPixmap		pixMap = ui->View->grab( ui->View->scene()->itemsBoundingRect().toRect() );
+		//			pixMap.save( fileName );
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -222,15 +240,23 @@ void	MainWindow::openFile()
 	QString		fileName = QFileDialog::getOpenFileName(
 				this, tr("Open File"),
 				QCoreApplication::applicationDirPath(),
-				tr("BMP Files (*.bmp);;JPEG (*.JPEG);;PNG (*.png)") );
+				tr("Text Files (*.txt)") );
 
 	if ( !fileName.isNull() )
 	{
-		QPixmap		pixMap;
-		pixMap.load( fileName );
-		ui->View->scene()->addPixmap( pixMap );
+		QFile file(QFileInfo(fileName).absoluteFilePath());
+		if (file.open(QIODevice::ReadOnly))
+		{
+			QBrush brush;
+			double size;
+			QDataStream in(&file);
+			in >> brush >> size;
+			file.close();
+			QMessageBox box( this );
+			box.setText( QString::number( size ) );
+			box.exec();
+		}
 	}
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
