@@ -17,6 +17,8 @@ set(PROJECT_SOURCES
 	mainwindow.cpp
 	mainwindow.h
 	mainwindow.ui
+	Workers/worker.h
+	Workers/worker.cpp
 	View/canvas.cpp
 	View/canvas.h
 	View/Shapes/shape.h

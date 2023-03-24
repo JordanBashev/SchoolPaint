@@ -46,9 +46,9 @@ public:
 	void	changePenColor( const QPen&		newPen		= BASE_PEN );
 	void	changeSize( const double		size		= BASE_SIZE );
 	QPointF	getBoundingRectCenter();
-	QBrush	getBrush();
-	QPen	getPen();
-	double	getSize();
+	QBrush	getBrush() const;
+	QPen	getPen() const;
+	double	getSize() const;
 
 protected:
 	virtual QRectF	boundingRect() const override;

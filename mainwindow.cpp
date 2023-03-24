@@ -99,7 +99,6 @@ void	MainWindow::comboSelect( const int indx )
 		m_scene->setFillColor( getFillColor );
 		break;
 	}
-
 	case	int( m_selection::PEN ):
 	{
 		QColor	getPenColor
@@ -107,7 +106,6 @@ void	MainWindow::comboSelect( const int indx )
 		m_scene->setPenColor( getPenColor );
 		break;
 	}
-
 	case	int( m_selection::RESIZE ):
 	{
 		int		getSize
@@ -115,7 +113,6 @@ void	MainWindow::comboSelect( const int indx )
 		m_scene->setSize( getSize );
 		break;
 	}
-
 	case	int( m_selection::SQUARE ):
 		m_scene->drawRectangle();
 		break;
@@ -198,63 +195,92 @@ void	MainWindow::showContextMenu( const QPoint& pos )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-//DONE WRONG REDO
+void MainWindow::handleResults()
+{
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 void	MainWindow::saveFile()
 {
-	QList< QGraphicsItem* > allItems = m_scene->items();
-
 	QString		fileName = QFileDialog::getSaveFileName(
-				this, "Save image",
+				this, tr( "Save image" ),
 				QCoreApplication::applicationDirPath(),
-				"Text Files (*.txt)" );
+				tr( "Text Files (*.txt)" ) );
+
 	if ( !fileName.isNull() )
 	{
-		QFile file(QFileInfo(fileName).absoluteFilePath());
-		if (file.open(QIODevice::WriteOnly))
+		QFile	file( QFileInfo( fileName ).absoluteFilePath() );
+		if ( file.open(QIODevice::WriteOnly) )
 		{
-			QDataStream out(&file);
+			QList< QGraphicsItem* > allItems = m_scene->items();
+			quint16		counter = allItems.count();
+
+			QDataStream		out( &file );
+			out.setFloatingPointPrecision( out.DoublePrecision );
+
+			out << counter;
 			for( auto item : allItems )
 			{
-				if( Shape* toShape = dynamic_cast< Shape* >( item ) )
+				if( Shape*	toShape = dynamic_cast< Shape* >( item ) )
 				{
-					out << toShape->getBrush();
-					//out << toShape->getPen();
-					out << toShape->getSize();
+					qint32		type		= toShape->type();
+					QTransform	rotation	= toShape->transform();
+					out << toShape->getBrush()
+						<< toShape->getPen()
+						<< toShape->getSize()
+						<< toShape->m_name
+						<< type
+						<< toShape->scenePos()
+						<< rotation;
 				}
 			}
 			file.close();
 		}
-
-		//			QPixmap		pixMap = ui->View->grab( ui->View->scene()->itemsBoundingRect().toRect() );
-		//			pixMap.save( fileName );
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-//almost done
-
 void	MainWindow::openFile()
 {
 	QString		fileName = QFileDialog::getOpenFileName(
-				this, tr("Open File"),
+				this, tr( "Open File" ),
 				QCoreApplication::applicationDirPath(),
-				tr("Text Files (*.txt)") );
+				tr( "Text Files (*.txt)" ) );
 
 	if ( !fileName.isNull() )
 	{
-		QFile file(QFileInfo(fileName).absoluteFilePath());
-		if (file.open(QIODevice::ReadOnly))
+		QFile	file( QFileInfo( fileName ).absoluteFilePath() );
+		if ( file.open( QIODevice::ReadOnly ) )
 		{
-			QBrush brush;
-			double size;
-			QDataStream in(&file);
-			in >> brush >> size;
+			QBrush			brush;
+			double			size;
+			QPen			pen;
+			QString			name;
+			qint32			type;
+			QPointF			scenePos;
+			quint16			count;
+			QTransform		rotation;
+			QDataStream		in( &file );
+
+			in	>> count;
+			for( int	i = 0; i < count; ++i )
+			{
+				in	>> brush
+					>> pen
+					>> size
+					>> name
+					>> type
+					>> scenePos
+					>> rotation;
+
+				m_scene->loadItems( brush, pen, size,
+									name, type , scenePos , rotation );
+			}
+
 			file.close();
-			QMessageBox box( this );
-			box.setText( QString::number( size ) );
-			box.exec();
 		}
 	}
 }
@@ -265,6 +291,7 @@ void	MainWindow::changeFillColor()
 {
 	QColor	newFillColor
 			= QColorDialog::getColor( Qt::white, this, "fillColor_Picker" );
+
 	m_scene->changeFillColor( newFillColor );
 }
 
@@ -274,6 +301,7 @@ void	MainWindow::changePenColor()
 {
 	QColor	newPenColor
 			= QColorDialog::getColor( Qt::white, this, "fillColor_Picker" );
+
 	m_scene->changePenColor( newPenColor );
 }
 
@@ -283,6 +311,7 @@ void	MainWindow::changeSize()
 {
 	int		newSize
 			=	QInputDialog::getInt( this, "elements_Size", "Size: " );
+
 	m_scene->changeSize( newSize );
 }
 

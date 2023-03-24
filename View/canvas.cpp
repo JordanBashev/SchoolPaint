@@ -77,7 +77,7 @@ void	Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent*	event )
 	if( event->button() == Qt::RightButton && m_isGroupSelected )
 	{
 		m_selectionPath->addRect
-				( QRectF( m_selectionTopLeft,event->scenePos() ));
+				( QRectF( m_selectionTopLeft,event->scenePos() ) );
 		// creating path with (0 ,0) in a double click will crash the app. think of potential fix
 		m_deletePath	= addPath( *m_selectionPath );
 		m_deletePath->setFlag( m_deletePath->ItemIsMovable );
@@ -141,15 +141,19 @@ void	Canvas::keyPressEvent( QKeyEvent* event )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::paintRect(	const QPointF&	pos,
-							const QColor&	fillColor,
-							const QColor&	penColor,
-							const int		size )
+void	Canvas::paintRect(	const QPointF&		pos,
+							const QColor&		fillColor,
+							const QColor&		penColor,
+							const int			size ,
+							const QString		name ,
+							const QTransform	rotation )
 {
 	QBrush*		brush	= new QBrush( fillColor );
 	QPen*		pen		= new QPen( penColor );
 	Shape*		item	= new Rect( size, *pen, *brush, pos );
 	item->m_tag.append( "Rect" );
+	item->m_name.append( name );
+	item->setTransform( rotation );
 	addItem( item );
 	delete	brush;
 	delete	pen;
@@ -157,15 +161,19 @@ void	Canvas::paintRect(	const QPointF&	pos,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::paintEllipse(	const QPointF&	pos,
-								const QColor&	fillColor,
-								const QColor&	penColor,
-								const int		size )
+void	Canvas::paintEllipse(	const QPointF&		pos,
+								const QColor&		fillColor,
+								const QColor&		penColor,
+								const int			size ,
+								const QString		name ,
+								const QTransform	rotation )
 {
 	QBrush*		brush	= new QBrush( fillColor );
 	QPen*		pen		= new QPen( penColor );
 	Shape*		item	= new Ellipse( size, *pen, *brush, pos );
 	item->m_tag.append( "Ellipse" );
+	item->m_name.append( name );
+	item->setTransform( rotation );
 	addItem( item );
 	delete	brush;
 	delete	pen;
@@ -173,15 +181,19 @@ void	Canvas::paintEllipse(	const QPointF&	pos,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::paintCircle(	const QPointF&	pos,
-								const QColor&	fillColor,
-								const QColor&	penColor,
-								const int		size )
+void	Canvas::paintCircle(	const QPointF&		pos,
+								const QColor&		fillColor,
+								const QColor&		penColor,
+								const int			size,
+								const QString		name,
+								const QTransform	rotation )
 {
 	QBrush*		brush	= new QBrush( fillColor );
 	QPen*		pen		= new QPen( penColor );
 	Shape*		item	= new Circle( size, *pen, *brush, pos );
 	item->m_tag.append( "Circle" );
+	item->m_name.append( name );
+	item->setTransform( rotation );
 	addItem( item );
 	delete	brush;
 	delete	pen;
@@ -189,15 +201,19 @@ void	Canvas::paintCircle(	const QPointF&	pos,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::paintHexagon(	const QPointF&	pos,
-								const QColor&	fillColor,
-								const QColor&	penColor,
-								const int		size )
+void	Canvas::paintHexagon(	const QPointF&		pos,
+								const QColor&		fillColor,
+								const QColor&		penColor,
+								const int			size ,
+								const QString		name,
+								const QTransform	rotation )
 {
 	QBrush*		brush	= new QBrush( fillColor );
 	QPen*		pen		= new QPen( penColor );
 	Shape*		item	= new Hexagon( size, *pen, *brush, pos );
 	item->m_tag.append( "Hexagon" );
+	item->m_name.append( name );
+	item->setTransform( rotation );
 	addItem( item);
 	delete	brush;
 	delete	pen;
@@ -205,15 +221,19 @@ void	Canvas::paintHexagon(	const QPointF&	pos,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Canvas::paintStar(	const QPointF&	pos,
-							const QColor&	fillColor,
-							const QColor&	penColor,
-							const int		size )
+void	Canvas::paintStar(	const QPointF&		pos,
+							const QColor&		fillColor,
+							const QColor&		penColor,
+							const int			size,
+							const QString		name,
+							const QTransform	rotation )
 {
 	QBrush*		brush	= new QBrush( fillColor );
 	QPen*		pen		= new QPen( penColor );
 	Shape*		item	= new Star( size, *pen, *brush, pos );
 	item->m_tag.append( "Star" );
+	item->m_name.append( name );
+	item->setTransform( rotation );
 	addItem( item );
 	delete	brush;
 	delete	pen;
@@ -351,6 +371,53 @@ void	Canvas::rotateObject( QWidget* parent )
 	Shape*	item	=	getItem( m_itemSelect );
 	if( item != nullptr )
 		m_slider	=	new CustomSlider( parent, item );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void Canvas::loadItems(	const QBrush&		brush, const	QPen& pen,
+						const double		size, const		QString& name,
+						const int			type , const	QPointF& scenePos,
+						const QTransform	rotation )
+{
+	switch( type )
+	{
+	case int( Shapetype::RECTANGLE ):
+		paintRect(	scenePos, brush.color(),
+					pen.color(),
+					size,
+					name,
+					rotation );
+		break;
+	case int( Shapetype::ELLIPSE ):
+		paintEllipse(	scenePos, brush.color(),
+						pen.color(),
+						size,
+						name,
+						rotation );
+		break;
+	case int( Shapetype::CIRCLE ):
+		paintCircle(	scenePos, brush.color(),
+						pen.color(),
+						size,
+						name,
+						rotation );
+		break;
+	case int( Shapetype::HEXAGON ):
+		paintHexagon(	scenePos, brush.color(),
+						pen.color(),
+						size,
+						name,
+						rotation );
+		break;
+	case int( Shapetype::STAR ):
+		paintStar(	scenePos, brush.color(),
+					pen.color(),
+					size,
+					name,
+					rotation );
+		break;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////

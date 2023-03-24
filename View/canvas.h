@@ -74,6 +74,10 @@ public:
 	void	changeSize( const double size = DEFAULT_SIZE );
 	void	changeOpacity ( QWidget* parent = nullptr );
 	void	rotateObject( QWidget* parent = nullptr );
+	void	loadItems(	const QBrush&		brush, const	QPen& pen,
+						const double		size , const	QString& name ,
+						const int			type , const	QPointF& scenePos ,
+						const QTransform	rotation );
 
 private:
 	virtual void	mousePressEvent
@@ -82,30 +86,40 @@ private:
 					( QGraphicsSceneMouseEvent* event ) override;
 	virtual void	keyPressEvent ( QKeyEvent *event ) override;
 
-	void	paintRect(	const QPointF&	pos			= QPointF(),
-						const QColor&	fillColor	= DEFAULT_FILL_COLOR,
-						const QColor&	penColor	= DEFAULT_PEN_COLOR,
-						const int		size		= DEFAULT_SIZE );
+	void	paintRect(	const QPointF&		pos			= QPointF(),
+						const QColor&		fillColor	= DEFAULT_FILL_COLOR,
+						const QColor&		penColor	= DEFAULT_PEN_COLOR,
+						const int			size		= DEFAULT_SIZE,
+						const QString		name		= "",
+						const QTransform	rotation	= QTransform() );
 
-	void	paintEllipse(	const QPointF&	pos			= QPointF(),
-							const QColor&	fillColor	= DEFAULT_FILL_COLOR,
-							const QColor&	penColor	= DEFAULT_PEN_COLOR,
-							const int		size		= DEFAULT_SIZE );
+	void	paintEllipse(	const QPointF&		pos			= QPointF(),
+							const QColor&		fillColor	= DEFAULT_FILL_COLOR,
+							const QColor&		penColor	= DEFAULT_PEN_COLOR,
+							const int			size		= DEFAULT_SIZE,
+							const QString		name		= "",
+							const QTransform	rotation	= QTransform() );
 
-	void	paintCircle(	const QPointF&	pos			= QPointF(),
-							const QColor&	fillColor	= DEFAULT_FILL_COLOR,
-							const QColor&	penColor	= DEFAULT_PEN_COLOR,
-							const int		size		= DEFAULT_SIZE );
+	void	paintCircle(	const QPointF&		pos			= QPointF(),
+							const QColor&		fillColor	= DEFAULT_FILL_COLOR,
+							const QColor&		penColor	= DEFAULT_PEN_COLOR,
+							const int			size		= DEFAULT_SIZE,
+							const QString		name		= "",
+							const QTransform	rotation	= QTransform() );
 
-	void	paintHexagon(	const QPointF&	pos			= QPointF(),
-							const QColor&	fillColor	= DEFAULT_FILL_COLOR,
-							const QColor&	penColor	= DEFAULT_PEN_COLOR,
-							const int		size		= DEFAULT_SIZE );
+	void	paintHexagon(	const QPointF&		pos			= QPointF(),
+							const QColor&		fillColor	= DEFAULT_FILL_COLOR,
+							const QColor&		penColor	= DEFAULT_PEN_COLOR,
+							const int			size		= DEFAULT_SIZE,
+							const QString		name		= "",
+							const QTransform	rotation	= QTransform() );
 
-	void	paintStar(	const QPointF&	pos			= QPointF(),
-						const QColor&	fillColor	= DEFAULT_FILL_COLOR,
-						const QColor&	penColor	= DEFAULT_PEN_COLOR,
-						const int		size		= DEFAULT_SIZE );
+	void	paintStar(	const QPointF&		pos			= QPointF(),
+						const QColor&		fillColor	= DEFAULT_FILL_COLOR,
+						const QColor&		penColor	= DEFAULT_PEN_COLOR,
+						const int			size		= DEFAULT_SIZE,
+						const QString		name		= "",
+						const QTransform	rotation	= QTransform() );
 
 	void	pasteItems( Shape* item = nullptr );
 

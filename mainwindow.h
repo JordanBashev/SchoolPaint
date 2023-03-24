@@ -53,8 +53,9 @@ private:
 	Canvas*		m_scene		= nullptr;
 
 private slots:
-	void	comboSelect( const int indx = 0 );
-	void	showContextMenu( const QPoint& pos = QPoint() );
+	void	comboSelect( const int	indx = 0 );
+	void	showContextMenu( const QPoint&	pos = QPoint() );
+	void	handleResults();
 	void	saveFile();
 	void	openFile();
 	void	changeFillColor();
@@ -65,6 +66,11 @@ private slots:
 	void	changeItemName();
 	void	displayItemName();
 	void	deleteItems();
+
+signals:
+	void	operate( const QString& text = NULL, QLineEdit* edit = nullptr );
+	void	operate2( const QString& text = NULL, QLineEdit* edit = nullptr );
+
 };
 
 ////////////////////////////////////////////////////////////////////////////////
