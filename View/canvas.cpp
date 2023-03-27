@@ -77,7 +77,7 @@ void	Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent*	event )
 	if( event->button() == Qt::RightButton && m_isGroupSelected )
 	{
 		m_selectionPath->addRect
-				( QRectF( m_selectionTopLeft,event->scenePos() ) );
+				( QRectF( m_selectionTopLeft, event->scenePos() ) );
 		// creating path with (0 ,0) in a double click will crash the app. think of potential fix
 		m_deletePath	= addPath( *m_selectionPath );
 		m_deletePath->setFlag( m_deletePath->ItemIsMovable );

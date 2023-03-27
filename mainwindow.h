@@ -9,10 +9,10 @@
 #include <QtCore>
 #include <QtGui>
 
-
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "View/canvas.h"
+#include "Workers/worker.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -48,6 +48,7 @@ public:
 
 private:
 	Ui::MainWindow*		ui;
+	QThread		workerThread;
 
 private:
 	Canvas*		m_scene		= nullptr;
@@ -55,7 +56,7 @@ private:
 private slots:
 	void	comboSelect( const int	indx = 0 );
 	void	showContextMenu( const QPoint&	pos = QPoint() );
-	void	handleResults();
+	void	handleResults( const QString& result );
 	void	saveFile();
 	void	openFile();
 	void	changeFillColor();
@@ -68,8 +69,9 @@ private slots:
 	void	deleteItems();
 
 signals:
-	void	operate( const QString& text = NULL, QLineEdit* edit = nullptr );
-	void	operate2( const QString& text = NULL, QLineEdit* edit = nullptr );
+	void	saveFiles(	QList< QGraphicsItem* > allItems ,
+						const QString& fileName );
+	void	openFiles(	QGraphicsScene* scene , const QString& fileName );
 
 };
 

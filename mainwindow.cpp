@@ -68,6 +68,8 @@ MainWindow::~MainWindow()
 {
 	delete ui;
 	delete m_scene;
+	workerThread.quit();
+	workerThread.wait();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -195,50 +197,33 @@ void	MainWindow::showContextMenu( const QPoint& pos )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::handleResults()
+void MainWindow::handleResults( const QString& result )
 {
-
+	if( result == "Success" )
+	{
+		workerThread.quit();
+		workerThread.wait();
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void	MainWindow::saveFile()
 {
-	QString		fileName = QFileDialog::getSaveFileName(
-				this, tr( "Save image" ),
-				QCoreApplication::applicationDirPath(),
-				tr( "Text Files (*.txt)" ) );
+	QList< QGraphicsItem* > allItems = m_scene->items();
+	QString					fileName = QFileDialog::getSaveFileName(
+							this, tr( "Save image" ),
+							QCoreApplication::applicationDirPath(),
+							tr( "Text Files (*.txt)" ) );
 
-	if ( !fileName.isNull() )
-	{
-		QFile	file( QFileInfo( fileName ).absoluteFilePath() );
-		if ( file.open(QIODevice::WriteOnly) )
-		{
-			QList< QGraphicsItem* > allItems = m_scene->items();
-			quint16		counter = allItems.count();
+	Worker* worker = new Worker;
+	worker->moveToThread( &workerThread );
+	connect( &workerThread, &QThread::finished, worker, &QObject::deleteLater );
+	connect( this, &MainWindow::saveFiles, worker, &Worker::saveFile );
+	connect( worker, &Worker::resultReady, this, &MainWindow::handleResults );
+	workerThread.start();
 
-			QDataStream		out( &file );
-			out.setFloatingPointPrecision( out.DoublePrecision );
-
-			out << counter;
-			for( auto item : allItems )
-			{
-				if( Shape*	toShape = dynamic_cast< Shape* >( item ) )
-				{
-					qint32		type		= toShape->type();
-					QTransform	rotation	= toShape->transform();
-					out << toShape->getBrush()
-						<< toShape->getPen()
-						<< toShape->getSize()
-						<< toShape->m_name
-						<< type
-						<< toShape->scenePos()
-						<< rotation;
-				}
-			}
-			file.close();
-		}
-	}
+	emit MainWindow::saveFiles( allItems , fileName );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -250,39 +235,15 @@ void	MainWindow::openFile()
 				QCoreApplication::applicationDirPath(),
 				tr( "Text Files (*.txt)" ) );
 
-	if ( !fileName.isNull() )
-	{
-		QFile	file( QFileInfo( fileName ).absoluteFilePath() );
-		if ( file.open( QIODevice::ReadOnly ) )
-		{
-			QBrush			brush;
-			double			size;
-			QPen			pen;
-			QString			name;
-			qint32			type;
-			QPointF			scenePos;
-			quint16			count;
-			QTransform		rotation;
-			QDataStream		in( &file );
+	Worker* worker = new Worker;
+	worker->moveToThread( &workerThread );
+	connect( &workerThread, &QThread::finished, worker, &QObject::deleteLater );
+	connect( this, &MainWindow::openFiles, worker, &Worker::openFile );
+	connect( worker, &Worker::resultReady, this, &MainWindow::handleResults );
+	workerThread.start();
 
-			in	>> count;
-			for( int	i = 0; i < count; ++i )
-			{
-				in	>> brush
-					>> pen
-					>> size
-					>> name
-					>> type
-					>> scenePos
-					>> rotation;
-
-				m_scene->loadItems( brush, pen, size,
-									name, type , scenePos , rotation );
-			}
-
-			file.close();
-		}
-	}
+	emit MainWindow::openFiles(	m_scene,
+								fileName );
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -4,6 +4,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <QObject>
+#include <QFileDialog>
+#include <QGraphicsItem>
+
+////////////////////////////////////////////////////////////////////////////////
+
+#include "../View/Shapes/shape.h"
+#include "../View/canvas.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -15,11 +22,12 @@ public:
 	Worker();
 
 public slots:
-	void	saveFile();
-	void	openFile();
+	void	saveFile(	QList< QGraphicsItem* > allItems ,
+						const QString& fileName );
+	void	openFile( QGraphicsScene* scene , const QString& fileName );
 
 signals:
-	void	resultReady();
+	void	resultReady( const QString& result );
 
 };
 
