@@ -76,9 +76,11 @@ void	Canvas::mouseReleaseEvent( QGraphicsSceneMouseEvent*	event )
 
 	if( event->button() == Qt::RightButton && m_isGroupSelected )
 	{
-		m_selectionPath->addRect
-				( QRectF( m_selectionTopLeft, event->scenePos() ) );
-		// creating path with (0 ,0) in a double click will crash the app. think of potential fix
+		if( m_selectionPath == nullptr )
+			m_selectionPath		= new QPainterPath();
+
+		m_selectionPath->addRect(
+					QRectF( m_selectionTopLeft, event->scenePos() ) );
 		m_deletePath	= addPath( *m_selectionPath );
 		m_deletePath->setFlag( m_deletePath->ItemIsMovable );
 		m_deletePath->setFlag( m_deletePath->ItemIsSelectable );
@@ -565,10 +567,17 @@ void	Canvas::selectGroup()
 
 void	Canvas::searchItems( const QString& text )
 {
-	for( auto	item : items() )
+	QPainterPath	path;
+	path.addRect( this->sceneRect() );
+
+	setSelectionArea( path );
+
+	for( auto	item : selectedItems() )
 		if( Shape*	toShape = dynamic_cast< Shape* >( item ) )
-			toShape->setSelected(	toShape->m_tag == text ||
-									toShape->m_name == text );
+			if( toShape->m_tag == text || toShape->m_name == text )
+				toShape->setSelected( false );
+//			item->setSelected(	toShape->m_tag == text ||
+//								toShape->m_name == text );
 }
 
 ////////////////////////////////////////////////////////////////////////////////

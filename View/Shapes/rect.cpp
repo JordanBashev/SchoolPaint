@@ -4,8 +4,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Rect::Rect( const int size, const QPen& pen,
-			const QBrush& brush, const QPointF& pos )
+Rect::Rect(		const int size, const QPen& pen,
+				const QBrush& brush, const QPointF& pos )
 {
 	m_size	= size;
 	m_pen	= pen;

@@ -61,14 +61,14 @@ QBrush	Shape::getBrush() const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-QPen Shape::getPen() const
+QPen	Shape::getPen() const
 {
 	return m_pen;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-double Shape::getSize() const
+double	Shape::getSize() const
 {
 	return m_size;
 }
@@ -82,9 +82,9 @@ QRectF	Shape::boundingRect() const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Shape::paint( QPainter*	painter,
-					  const QStyleOptionGraphicsItem*	option,
-					  QWidget*	widget )
+void	Shape::paint(	QPainter*	painter,
+						const QStyleOptionGraphicsItem*	option,
+						QWidget*	widget )
 {
 	QRectF	rect		= boundingRect();
 	QRectF	Ellipse		= QRectF( 0, 0, m_size / ONE_FIVE, m_size );

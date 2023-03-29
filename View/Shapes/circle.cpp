@@ -4,8 +4,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Circle::Circle( const int size, const QPen& pen,
-				const QBrush& brush, const QPointF& pos )
+Circle::Circle(		const int size, const QPen& pen,
+					const QBrush& brush, const QPointF& pos )
 {
 	m_size	= size;
 	m_pen	= pen;

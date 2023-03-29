@@ -5,6 +5,11 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+const QString SUCCESS_SAVE = "Saved Successfuly";
+const QString SUCCESS_OPEN = "Opened Successfuly";
+
+////////////////////////////////////////////////////////////////////////////////
+
 MainWindow::MainWindow( QWidget* parent )
 	: QMainWindow( parent )
 	, ui( new Ui::MainWindow )
@@ -20,46 +25,48 @@ MainWindow::MainWindow( QWidget* parent )
 
 	ui->dropDownMenu->addItem(
 				QIcon( "/Users/monterey/Documents/Icons/Select.png" ),
-				tr("select") );
+				tr( "select" ) );
 	ui->dropDownMenu->addItem(
 				QIcon( "/Users/monterey/Documents/Icons/groupSelect.png" ),
-				tr("group") );
+				tr( "group" ) );
 	ui->dropDownMenu->addItem(
 				QIcon( "/Users/monterey/Documents/Icons/Search.png" ),
-				tr("search") );
+				tr( "search" ) );
 	ui->dropDownMenu->addItem(
 				QIcon( "/Users/monterey/Documents/Icons/Brush.png" ),
-				tr("brush") );
+				tr( "brush" ) );
 	ui->dropDownMenu->addItem(
 				QIcon( "/Users/monterey/Documents/Icons/Pen.png" ),
-				tr("pen") );
+				tr( "pen" ) );
 	ui->dropDownMenu->addItem(
 				QIcon( "/Users/monterey/Documents/Icons/Resize.png" ),
-				tr("resize") );
+				tr( "resize" ) );
 	ui->dropDownMenu->addItem(
 				QIcon( "/Users/monterey/Documents/Icons/Rectangle.png" ),
-				tr("square") );
+				tr( "square" ) );
 	ui->dropDownMenu->addItem(
 				QIcon( "/Users/monterey/Documents/Icons/Ellipse.png" ),
-				tr("ellipse") );
+				tr( "ellipse" ) );
 	ui->dropDownMenu->addItem(
 				QIcon( "/Users/monterey/Documents/Icons/Circle.png" ),
-				tr("circle") );
+				tr( "circle" ) );
 	ui->dropDownMenu->addItem(
 				QIcon( "/Users/monterey/Documents/Icons/Hexagon.png" ),
-				tr("hexagon") );
+				tr( "hexagon" ) );
 	ui->dropDownMenu->addItem(
 				QIcon( "/Users/monterey/Documents/Icons/Star.png" ),
-				tr("star") );
+				tr( "star" ) );
 
-	connect( ui->save, &QPushButton::clicked, this, &MainWindow::saveFile );
-	connect( ui->open, &QPushButton::clicked, this, &MainWindow::openFile );
+	connect(	ui->save, &QPushButton::clicked, this, &MainWindow::saveFile );
+	connect(	ui->open, &QPushButton::clicked, this, &MainWindow::openFile );
+	connect(	&serializationThread, &Serialization::resultReady,
+				this, &MainWindow::handleResults );
 
-	connect( ui->dropDownMenu, &QComboBox::activated,
-			 this , &MainWindow::comboSelect );
+	connect(	ui->dropDownMenu, &QComboBox::activated,
+				this , &MainWindow::comboSelect );
 
-	connect( this, &MainWindow::customContextMenuRequested,
-			 this, &MainWindow::showContextMenu );
+	connect(	this, &MainWindow::customContextMenuRequested,
+				this, &MainWindow::showContextMenu );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -68,8 +75,10 @@ MainWindow::~MainWindow()
 {
 	delete ui;
 	delete m_scene;
-	workerThread.quit();
-	workerThread.wait();
+	serializationThread.quit();
+	serializationThread.wait();
+//	workerThread.quit();
+//	workerThread.wait();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,6 +151,8 @@ void	MainWindow::comboSelect( const int indx )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+//put this in class easier to update later
+
 
 void	MainWindow::showContextMenu( const QPoint& pos )
 {
@@ -191,6 +202,10 @@ void	MainWindow::showContextMenu( const QPoint& pos )
 		contextMenu.addAction( &action7 );
 		contextMenu.addAction( &action8 );
 
+		//when the menu is created at right click at the given position
+		//selecting items after an action is chose fks up the matrix of the item
+		//temporarely because after realease and click on item again everything is fine
+
 		contextMenu.exec( mapToGlobal(pos) );
 	}
 }
@@ -199,34 +214,47 @@ void	MainWindow::showContextMenu( const QPoint& pos )
 
 void MainWindow::handleResults( const QString& result )
 {
-	if( result == "Success" )
+	QMessageBox box;
+
+	if( result == SUCCESS_SAVE )
 	{
-		workerThread.quit();
-		workerThread.wait();
+		box.setText( SUCCESS_SAVE );
+		box.exec();
+		return;
+//		workerThread.quit();
+//		workerThread.wait();
 	}
+
+	box.setText( SUCCESS_OPEN );
+	box.exec();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void	MainWindow::saveFile()
 {
-	QList< QGraphicsItem* > allItems = m_scene->items();
-	QString					fileName = QFileDialog::getSaveFileName(
-							this, tr( "Save image" ),
-							QCoreApplication::applicationDirPath(),
-							tr( "Text Files (*.txt)" ) );
+	QList< QGraphicsItem* >		allItems = m_scene->items();
+	QString						fileName = QFileDialog::getSaveFileName(
+								this, tr( "Save image" ),
+								QCoreApplication::applicationDirPath(),
+								tr( "Text Files (*.txt)" ) );
 
-	Worker* worker = new Worker;
-	worker->moveToThread( &workerThread );
-	connect( &workerThread, &QThread::finished, worker, &QObject::deleteLater );
-	connect( this, &MainWindow::saveFiles, worker, &Worker::saveFile );
-	connect( worker, &Worker::resultReady, this, &MainWindow::handleResults );
-	workerThread.start();
+	serializationThread.run( allItems, m_scene, fileName, SAVE_FILE );
 
-	emit MainWindow::saveFiles( allItems , fileName );
+	//Gluposti praish
+//	Worker* worker = new Worker;
+//	worker->moveToThread( &workerThread );
+//	connect( &workerThread, &QThread::finished, worker, &QObject::deleteLater );
+//	connect( this, &MainWindow::saveFiles, worker, &Worker::saveFile );
+//	connect( worker, &Worker::resultReady, this, &MainWindow::handleResults );
+//	workerThread.start();
+
+//	emit MainWindow::saveFiles( allItems , fileName );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// custom thread where run accepts the values and type of request and after
+// its done it dies :)
 
 void	MainWindow::openFile()
 {
@@ -235,15 +263,17 @@ void	MainWindow::openFile()
 				QCoreApplication::applicationDirPath(),
 				tr( "Text Files (*.txt)" ) );
 
-	Worker* worker = new Worker;
-	worker->moveToThread( &workerThread );
-	connect( &workerThread, &QThread::finished, worker, &QObject::deleteLater );
-	connect( this, &MainWindow::openFiles, worker, &Worker::openFile );
-	connect( worker, &Worker::resultReady, this, &MainWindow::handleResults );
-	workerThread.start();
+	serializationThread.run(	QList< QGraphicsItem* >() ,
+								m_scene, fileName, OPEN_FILE );
 
-	emit MainWindow::openFiles(	m_scene,
-								fileName );
+//	Worker* worker = new Worker;
+//	worker->moveToThread( &workerThread );
+//	connect( &workerThread, &QThread::finished, worker, &QObject::deleteLater );
+//	connect( this, &MainWindow::openFiles, worker, &Worker::openFile );
+//	connect( worker, &Worker::resultReady, this, &MainWindow::handleResults );
+//	workerThread.start();
+
+//	emit MainWindow::openFiles(	m_scene, fileName );
 }
 
 ////////////////////////////////////////////////////////////////////////////////

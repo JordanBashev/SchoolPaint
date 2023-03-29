@@ -19,6 +19,8 @@ set(PROJECT_SOURCES
 	mainwindow.ui
 	Workers/worker.h
 	Workers/worker.cpp
+	Serializer/serialization.h
+	Serializer/serialization.cpp
 	View/canvas.cpp
 	View/canvas.h
 	View/Shapes/shape.h

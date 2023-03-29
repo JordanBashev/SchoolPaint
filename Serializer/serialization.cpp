@@ -1,18 +1,36 @@
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "worker.h"
+#include "serialization.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Worker::Worker()
+const QString SUCCESS_SAVE = "Saved Successfuly";
+const QString SUCCESS_OPEN = "Opened Successfuly";
+
+////////////////////////////////////////////////////////////////////////////////
+
+Serialization::Serialization()
 {}
 
 ////////////////////////////////////////////////////////////////////////////////
 
-//see if meta object system can turn this into less code :)
+void	Serialization::run(	const QList< QGraphicsItem* > allItems,
+							Canvas* scene , const QString& fileName,
+							const int type )
+{
+	if( type == SAVE_FILE )
+	{
+		saveFile( allItems, fileName );
+		return;
+	}
 
-void	Worker::saveFile(	QList< QGraphicsItem* > allItems ,
-							const QString& fileName )
+	openFile( scene, fileName );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void	Serialization::saveFile(	const QList< QGraphicsItem* > allItems,
+									const QString& fileName)
 {
 	QString		result = "Failed To Open Dir";
 	if ( !fileName.isNull() )
@@ -44,7 +62,7 @@ void	Worker::saveFile(	QList< QGraphicsItem* > allItems ,
 				}
 			}
 			file.close();
-			result = "Success";
+			result = SUCCESS_SAVE;
 		}
 	}
 
@@ -53,14 +71,14 @@ void	Worker::saveFile(	QList< QGraphicsItem* > allItems ,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void	Worker::openFile( Canvas* scene, const QString& fileName )
+void	Serialization::openFile( Canvas* scene, const QString& fileName )
 {
-	QString		result = "Failed To Open Dir";
-
+	QString		result = "Success";
 	if ( !fileName.isNull() )
 	{
 		QFile	file( QFileInfo( fileName ).absoluteFilePath() );
 		result = "Failed To Open file";
+
 		if ( file.open( QIODevice::ReadOnly ) )
 		{
 			QBrush			brush;
@@ -88,7 +106,7 @@ void	Worker::openFile( Canvas* scene, const QString& fileName )
 									name, type , scenePos , rotation );
 			}
 			file.close();
-			result = "Success";
+			result = SUCCESS_OPEN;
 		}
 	}
 

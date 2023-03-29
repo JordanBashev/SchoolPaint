@@ -13,6 +13,7 @@
 
 #include "View/canvas.h"
 #include "Workers/worker.h"
+#include "Serializer/serialization.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -42,13 +43,19 @@ class MainWindow : public QMainWindow
 {
 	Q_OBJECT
 
+	enum m_serialization : quint8 {
+		SAVE_FILE = 0,
+		OPEN_FILE
+	};
+
 public:
 	MainWindow( QWidget*	parent	=	nullptr );
 	~MainWindow();
 
 private:
 	Ui::MainWindow*		ui;
-	QThread		workerThread;
+//	QThread		workerThread;
+	Serialization	serializationThread;
 
 private:
 	Canvas*		m_scene		= nullptr;
@@ -71,7 +78,7 @@ private slots:
 signals:
 	void	saveFiles(	QList< QGraphicsItem* > allItems ,
 						const QString& fileName );
-	void	openFiles(	QGraphicsScene* scene , const QString& fileName );
+	void	openFiles(	Canvas* scene , const QString& fileName );
 
 };
 

@@ -1,5 +1,5 @@
-#ifndef WORKER_H
-#define WORKER_H
+#ifndef SERIALIZATION_H
+#define SERIALIZATION_H
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -14,23 +14,33 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class Worker : public QObject
+class Serialization : public QThread
 {
 	Q_OBJECT
 
-public:
-	Worker();
+	enum m_type : quint8 {
+		SAVE_FILE = 0,
+		OPEN_FILE
+	};
 
-public slots:
-	void	saveFile(	QList< QGraphicsItem* > allItems ,
+public:
+	Serialization();
+	void run(	const QList< QGraphicsItem* > allItems = QList< QGraphicsItem* >(),
+				Canvas* scene = nullptr, const QString& fileName = "",
+				const int type = -1);
+
+	void	saveFile(	const QList<QGraphicsItem*> allItems ,
 						const QString& fileName );
 	void	openFile(	Canvas* scene , const QString& fileName );
 
 signals:
-	void	resultReady( const QString& result );
+	void resultReady( const QString& result );
 
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif // WORKER_H
+#endif // SERIALIZATION_H
+
+
+
